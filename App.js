@@ -1,99 +1,60 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { Button, TextInput, View } from 'react-native';
 import {
-  View, Text, Button, TextInput, PermissionsAndroid, Platform
-} from 'react-native';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+  createAppContainer,
+  createDrawerNavigator,
+  createStackNavigator
+} from 'react-navigation';
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
-// import DrawerLayout from 'react-native-drawer-layout-polyfill'
 
-class App extends React.Component {
-  state = {
-    count: 0
-  }
+import DrawerLayoutFixed from './DrawerLayoutFixed';
 
-  componentDidUpdate() {
-    const { count } = this.state;
+const navMode = 'stack'; // drawer | stack
+const applyFix = false; // only works in stack navMode
+const Drawer = applyFix ? DrawerLayoutFixed : DrawerLayout;
 
-    if (count === 3) {
-      this.checkPermissions();
-    }
-  }
-
-  checkPermissions = async () => {
-    const {
-      check, request, PERMISSIONS: { ACCESS_FINE_LOCATION }, RESULTS: { GRANTED }
-    } = PermissionsAndroid;
-
-    if (Platform.OS === 'android' &&
-      !await check(ACCESS_FINE_LOCATION) &&
-      GRANTED !== await request(ACCESS_FINE_LOCATION)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  handleNext = () => {
-    this.setState(state => ({ count: state.count + 1 }));
-  }
-
-  handleBack = () => {
-    this.setState(state => ({ count: state.count - 1 }));
-  }
-
+class App extends Component {
   renderNavigationView = () => (
-    <View style={{ flex: 1, backgroundColor: 'blue' }} />
-  )
+    <View style={{ flex: 1, backgroundColor: '#FFF' }} />
+  );
+
+  renderContent = () => (
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <Button title='zIndex bug (stack navMode)' />
+      <TextInput
+        defaultValue='Try to share my text (render bug)'
+        style={{ width: 250, borderBottomColor: 'blue', borderBottomWidth: 1 }}
+      />
+    </View>
+  );
 
   render() {
-    const { count } = this.state;
+    const content = this.renderContent();
 
-    return (
-      <DrawerLayout
-        // contentContainerStyle={{ zIndex: 1 }}
+    return navMode === 'drawer' ? (
+      content
+    ) : (
+      <Drawer
         renderNavigationView={this.renderNavigationView}
         drawerWidth={300}
         keyboardDismissMode='on-drag'
       >
-        <View style={{
-          flex: 1, margin: 10, alignItems: 'center', justifyContent: 'center'
-        }}
-        >
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text>{count}</Text>
-            <TextInput
-              defaultValue='i am a textinput'
-              style={{ borderBottomColor: 'blue', borderBottomWidth: 1 }}
-            />
-          </View>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ flex: 1, marginRight: 5 }}>
-              {count > 0 && (
-                <Button
-                  title='Back'
-                  onPress={this.handleBack}
-                />
-              )}
-            </View>
-            <View style={{ flex: 1, marginLeft: 5 }}>
-              {count < 6 && (
-                <Button
-                  title='Next'
-                  onPress={this.handleNext}
-                />
-              )}
-            </View>
-          </View>
-        </View>
-      </DrawerLayout>
+        {content}
+      </Drawer>
     );
   }
 }
 
-const AppNavigator = createStackNavigator({
-  App: {
-    screen: App
-  }
-});
+const routeConfig = { App: { screen: App } };
+const AppNavigator =
+  navMode === 'drawer'
+    ? createDrawerNavigator(routeConfig)
+    : createStackNavigator(routeConfig, { headerMode: 'none' });
 
 export default createAppContainer(AppNavigator);
