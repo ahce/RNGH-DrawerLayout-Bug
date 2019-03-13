@@ -8,12 +8,14 @@
     "ios": "react-native run-ios"
   },
   "dependencies": {
-    "react": "16.6.3",
-    "react-native": "0.58.4",
-    "react-native-gesture-handler": "1.0.15",
-    "react-navigation": "3.3.0"
+    "react": "16.8.3",
+    "react-native": "0.59.0",
+    "react-native-gesture-handler": "1.1.0",
+    "react-navigation": "3.3.2"
   },
   "devDependencies": {
-    "metro-react-native-babel-preset": "0.51.1"
+    "@babel/core": "7.3.4",
+    "@babel/runtime": "7.3.4",
+    "metro-react-native-babel-preset": "0.53.0"
   }
 }
